@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJAX</title>
+</head>
+
+<body>
+    <h1>AJAX</h1>
+    <button id="btnAjax">EJECUTAR AJAX</button>
+    <hr>
+    <button id="btnFetch">EJECUTAR AJAX - FETCH</button>
+    <hr>
+    <table id="tblUsers" border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>CONTACTAR</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+
+    <blockquote>Ver la consola del navegador</blockquote>
+
+    <script>
+
+        const d = document;
+        const xhr = new XMLHttpRequest();
+
+        let btnAjax = d.getElementById("btnAjax");
+        let btnFetch = d.getElementById("btnFetch");
+        let fragment = d.createDocumentFragment();
+
+        let tblUsers = d.getElementById("tblUsers");
+        let tbody = tblUsers.tBodies[0];
+
+        if (xhr) {
+            xhr.addEventListener("readystatechange", (e) => {
+                //READY_STATE_COMPLETE
+                if (xhr.readyState !== 4) return;
+
+                console.log(xhr);
+
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    console.log("éxito");
+                    console.log(xhr.responseText);
+
+                    let json = JSON.parse(xhr.responseText);
+                    console.log(json);
+
+                    llenarTabla(json);
+                } else {
+                    console.log("error");
+                    let message = xhr.statusText || "Ocurrió un error";
+                    tbody.innerHTML = `Error ${xhr.status}: ${message}`;
+                }
+            });
+        }
+
+        if (btnAjax) {
+            btnAjax.addEventListener("click", () => {
+
+                xhr.open("GET", "https://jsonplaceholder.typicode.com/users");
+
+                xhr.send();
+            });
+        }
+
+        if (btnFetch) {
+            btnFetch.addEventListener("click", () => {
+
+                fetch("https://jsonplaceholder.typicode.com/users")
+                    .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+                    .then((json) => {
+                        llenarTabla(json);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        let message = err.statusText || "Ocurrió un error";
+                        $fetch.innerHTML = `Error ${err.status}: ${message}`;
+                    })
+                    .finally(() => {
+                        console.log(
+                            "Esto se ejecutará independientemente del resultado de la Promesa Fetch"
+                        );
+                    });
+            });
+        }
+
+        function llenarTabla(json) {
+            json.forEach((el) => {
+
+                let tr = d.createElement("tr");
+                let td1 = d.createElement("td");
+                let td2 = d.createElement("td");
+                let td3 = d.createElement("td");
+                let td4 = d.createElement("td");
+                let btn = d.createElement("input");
+                btn.setAttribute("type", "button");
+                btn.setAttribute("value", "Abrir Web");
+                btn.addEventListener("click", () => {
+                    window.open("http://www." + el.website, '_blank').focus();
+                });
+
+                td1.textContent = el.name;
+                td2.textContent = el.email;
+                td3.textContent = el.phone;
+                td4.appendChild(btn);
+
+                tr.appendChild(td1);
+                tr.appendChild(td2);
+                tr.appendChild(td3);
+                tr.appendChild(td4);
+
+                fragment.append(tr);
+            });
+
+            tbody.appendChild(fragment);
+        }
+
+    </script>
+
+</body>
+
+</html>
