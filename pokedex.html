@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css">
 
     <style>
-        .capitalLetter::first-letter{
-            text-transform:capitalize;
+        .capitalLetter::first-letter {
+            text-transform: capitalize;
         }
     </style>
 </head>
@@ -32,17 +32,46 @@
         </main>
     </div>
 
-    <template id="template">        
-        <div class="card mx-md-2 my-2 col-md-2" >
+    <template id="template">
+        <div class="card mx-md-2 my-2 col-md-2">
             <img class="card-img-top" />
             <div class="card-body">
                 <h5 class="card-title capitalLetter"></h5>
                 <p class="card-text"></p>
-                <a href="#" class="btn btn-outline-info">Open Details</a>
+                <a href="#" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#detailsModal">Open
+                    Details</a>
             </div>
         </div>
     </template>
-    
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title capitalLetter" id="detailsModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6" id="imgNormal">
+                            Normal
+                        </div>
+                        <div class="col-6" id="imgShiny">
+                            Shiny
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12" >
+                            <p>Types:   </p>
+                            <ul id="types" class="list-group"></ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>                    
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>

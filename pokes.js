@@ -7,6 +7,7 @@ let _next = d.getElementById("next");
 d.addEventListener("DOMContentLoaded", (e) => PokemonList(url));
 
 d.addEventListener("click", (e) => {
+
     if (e.target === _previous || e.target === _next) {
         PokemonList(e.target.dataset.url);
     }
@@ -37,7 +38,7 @@ async function PokemonList(url) {
             _previous.classList.add("d-none");
         }
 
-        ShowPokemons2(json.results, _pokeList);
+        ShowPokemons(json.results, _pokeList);
 
     } catch (err) {
         console.error(err);
@@ -45,34 +46,7 @@ async function PokemonList(url) {
 
 }
 
-async function ShowPokemons(list) {
-
-    try {
-        let _figure = "";
-
-        for (i = 0; i < list.length; i++) {
-            let poke = list[i],
-                res = await fetch(poke.url),
-                json = await res.json();
-
-            _figure +=
-                `<figure class="figure col-3">
-                <img src="${json.sprites.front_default}" class="figure-img img-fluid rounded" alt="${json.name}">
-                <figcaption class="figure-caption">#${json.id} | ${json.name}</figcaption>
-                </figure>`;
-        }
-
-        let _list = d.getElementById("list");
-        _list.innerHTML = _figure;
-    } catch (err) {
-        console.error(err);
-    }
-
-
-}
-
-
-async function ShowPokemons2(list, content) {
+async function ShowPokemons(list, content) {
 
     try {
 
@@ -86,19 +60,64 @@ async function ShowPokemons2(list, content) {
 
             template.querySelector("img").setAttribute("src", json.sprites.front_default);
             template.querySelector("img").setAttribute("alt", json.name);
-           
+
             template.querySelector("h5").textContent = json.name;
             template.querySelector("p").textContent = `Pokémon #${json.id}`;
-            template.querySelector("p").dataset.id = json.id;
+            template.querySelector("a").dataset.id = json.id;
 
             let clone = d.importNode(template, true);
             _fragment.appendChild(clone);
         }
-        
+
         content.innerHTML = "";
         content.appendChild(_fragment);
 
     } catch (err) {
         console.error(err);
     }
+}
+
+let detailsModal = d.getElementById("detailsModal");
+if (detailsModal != null) {
+    detailsModal.addEventListener('show.bs.modal', function (e) {
+
+        let button = e.relatedTarget;
+        let urlDetail = `${url}${button.dataset.id}`;
+
+        fetch(urlDetail)
+            .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+            .then(json => {
+                this.querySelector("#detailsModalLabel").textContent = json.name;
+                this.querySelector("#imgNormal").innerHTML =
+                    `<figure class="figure">
+                <img src="${json.sprites.front_default}" class="figure-img img-fluid rounded" alt="${json.name}" width="192px">
+                <figcaption class="figure-caption">Normal</figcaption>
+                </figure>`;
+
+                this.querySelector("#imgShiny").innerHTML =
+                    `<figure class="figure">
+                <img src="${json.sprites.front_shiny}" class="figure-img img-fluid rounded" alt="${json.name}" width="192px">
+                <figcaption class="figure-caption">Shiny</figcaption>
+                </figure>`;
+
+                let _fragment = d.createDocumentFragment();
+
+                json.types.forEach(type => {
+                    let li = d.createElement("li");
+                    li.textContent = type.type.name;
+                    li.classList.add("capitalLetter", "list-group-item");
+
+                    _fragment.appendChild(li);
+                });
+
+                let types = this.querySelector("#types");
+                types.innerHTML = "";
+                types.appendChild(_fragment);
+
+            })
+            .catch(err => {
+                console.error("El Error al listar los datos!", err);
+            });
+
+    });
 }
